@@ -1,0 +1,11 @@
+{
+  "name": "musketeer-node",
+  "version": "0.0.1",
+  "description": "",
+  "main": "node.js",
+  "author": "Matthieu Holzer",
+  "license": "WTFPL",
+  "devDependencies": {
+    "socket.io": "~0.9.16"
+  }
+}
