@@ -6,6 +6,9 @@
   "author": "Matthieu Holzer",
   "license": "WTFPL",
   "devDependencies": {
-    "socket.io": "~0.9.16"
+    "socket.io": "~0.9.16",
+    "node-uuid": "~1.4.1",
+    "optimist": "~0.6.0",
+    "socket.io-client": "~0.9.16"
   }
 }
