@@ -10,7 +10,7 @@ var argv = require('optimist')
         .argv,
     clients = [],
     socket,
-    io = require('socket.io').listen(Math.random() * 8080),
+    io = require('socket.io').listen(8080),
     uuid = require('node-uuid');
 
 //Global Exception Handling
@@ -20,8 +20,9 @@ process.on('uncaughtException', function (err) {
 
 
 //connect to server passed via argv
-console.log('Connecting to: ', argv.server);
-socket = require('socket.io-client').connect(argv.server);
+// we do this via UDP
+//console.log('Connecting to: ', argv.server);
+//socket = require('socket.io-client').connect(argv.server);
 
 
 io.sockets.on('connection', function (socket) {
@@ -31,7 +32,9 @@ io.sockets.on('connection', function (socket) {
         socket : socket
     });
 
-    console.log(clients);
+    socket.on('auth', function (data) {
+        console.log(data);
+    });
 
     socket.on('candidate', function (data) {
         console.log('candidate');
