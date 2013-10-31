@@ -4,14 +4,15 @@
  * @version 0.1
  */
 
-var argv = require('optimist')
+var _ = require('underscore'),
+    util = require('util'),
+    argv = require('optimist')
         .usage('Usage: $0 --server=[url]')
         .demand(['server'])
         .argv,
-    clients = [],
-    socket,
-    io = require('socket.io').listen(8080),
-    uuid = require('node-uuid');
+    clients = require('./lib/collections/clients'),
+    WebSocketServer = require('ws').Server,
+    wss = new WebSocketServer({port: 8080});
 
 //Global Exception Handling
 process.on('uncaughtException', function (err) {
@@ -19,38 +20,57 @@ process.on('uncaughtException', function (err) {
 });
 
 
+//TODO connect to other notes via udp and create a replica network
 //connect to server passed via argv
 // we do this via UDP
 //console.log('Connecting to: ', argv.server);
 //socket = require('socket.io-client').connect(argv.server);
 
 
-io.sockets.on('connection', function (socket) {
+wss.on('connection', function (socket) {
 
-    clients.push({
-        id     : uuid.v4(),
-        socket : socket
+    socket.on('message', function (data) {
+        console.log('received: %s', data);
+        messageHandler(socket, JSON.parse(data));
     });
 
-    socket.on('auth', function (data) {
-        console.log(data);
+    socket.on('close', function (e) {
+        clients.remove(clients.getClientBySocket(socket));
     });
-
-    socket.on('candidate', function (data) {
-        console.log('candidate');
-        app.io.sockets.emit('candidate', data);
-    });
-
-    socket.on('offer', function (data) {
-        console.log('offer');
-        app.io.sockets.emit('offer', data);
-    });
-
-
-    socket.on('answer', function (data) {
-        console.log('answer');
-        app.io.sockets.emit('answer', data);
-    });
-
 
 });
+
+/*
+ wss.broadcast = function(data) {
+ for(var i in this.clients)
+ this.clients[i].send(data);
+ };
+ */
+function messageHandler(socket, data) {
+
+    if (!data.cmd) return;
+
+    switch (data.cmd.toLowerCase()) {
+        case 'peer:auth' :
+
+            var success = clients.add({
+                location: {lat: 0, long: 0},
+                socket: socket,
+                uuid: data.uuid
+            });
+
+            //https://github.com/einaros/ws/blob/master/lib/ErrorCodes.js
+            if (!success) socket.close(1008, 'Missing Auth or already registered.');
+
+            break;
+        case 'peer:list' :
+            socket.send(JSON.stringify(clients.list()));
+            break;
+        case 'webrtc:answer' :
+            break;
+        case 'webrtc:candidate'  :
+            break;
+        case 'webrtc:offer' :
+            break;
+    }
+}

@@ -5,10 +5,9 @@
   "main": "node.js",
   "author": "Matthieu Holzer",
   "license": "WTFPL",
-  "devDependencies": {
-    "socket.io": "~0.9.16",
-    "node-uuid": "~1.4.1",
+  "dependencies": {
     "optimist": "~0.6.0",
-    "socket.io-client": "~0.9.16"
+    "ws": "~0.4.31",
+    "underscore": "~1.5.2"
   }
 }
