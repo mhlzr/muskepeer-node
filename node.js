@@ -64,7 +64,7 @@ function messageHandler(socket, data) {
 
             break;
         case 'peer:list' :
-            socket.send(JSON.stringify({cmd: 'peer:list', data: clients.list()}));
+            sendToPeer(socket, {cmd: 'peer:list', data: clients.list()});
             break;
         case 'webrtc:answer' :
             break;
@@ -73,4 +73,10 @@ function messageHandler(socket, data) {
         case 'webrtc:offer' :
             break;
     }
+}
+
+
+function sendToPeer(socket, data) {
+    //TODO check state
+    socket.send(JSON.stringify(data));
 }
