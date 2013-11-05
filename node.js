@@ -64,7 +64,7 @@ function messageHandler(socket, data) {
 
             break;
         case 'peer:list' :
-            socket.send(JSON.stringify(clients.list()));
+            socket.send(JSON.stringify({cmd: 'peer:list', data: clients.list()}));
             break;
         case 'webrtc:answer' :
             break;
