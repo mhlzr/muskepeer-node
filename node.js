@@ -53,14 +53,17 @@ function messageHandler(socket, data) {
     switch (data.cmd.toLowerCase()) {
         case 'peer:auth' :
 
+            //Todo Test if clients authToken matches
             var success = clients.add({
                 location: {lat: 0, long: 0},
                 socket: socket,
                 uuid: data.uuid
             });
 
+            sendToPeer(socket, {cmd: 'peer:auth', data: {success: success}});
+
             //https://github.com/einaros/ws/blob/master/lib/ErrorCodes.js
-            if (!success) socket.close(1008, 'Missing Auth or already registered.');
+            if (!success) socket.close(1008, 'Missing auth-credentials or already registered.');
 
             break;
         case 'peer:list' :
@@ -77,6 +80,7 @@ function messageHandler(socket, data) {
 
 
 function sendToPeer(socket, data) {
-    //TODO check state
+    //state 1 = ready
+    if (socket.readyState !== 1) return;
     socket.send(JSON.stringify(data));
 }
