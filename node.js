@@ -10,7 +10,7 @@ var _ = require('underscore'),
         .usage('Usage: $0 --server=[url]')
         .demand(['server'])
         .argv,
-    clients = require('./lib/collections/clients'),
+    peers = require('./lib/collections/peers'),
     WebSocketServer = require('ws').Server,
     wss = new WebSocketServer({port: 8080});
 
@@ -35,26 +35,27 @@ wss.on('connection', function (socket) {
     });
 
     socket.on('close', function (e) {
-        clients.remove(clients.getClientBySocket(socket));
+        peers.remove(peers.getPeerBySocket(socket));
     });
 
 });
 
 /*
  wss.broadcast = function(data) {
- for(var i in this.clients)
- this.clients[i].send(data);
+ for(var i in this.peers)
+ this.peers[i].send(data);
  };
  */
 function messageHandler(socket, data) {
+    var peer;
 
     if (!data.cmd) return;
 
     switch (data.cmd.toLowerCase()) {
         case 'peer:auth' :
 
-            //Todo Test if clients authToken matches
-            var success = clients.add({
+            //Todo Test if peers authToken matches
+            var success = peers.add({
                 location: {lat: 0, long: 0},
                 socket: socket,
                 uuid: data.uuid
@@ -67,13 +68,17 @@ function messageHandler(socket, data) {
 
             break;
         case 'peer:list' :
-            sendToPeer(socket, {cmd: 'peer:list', data: clients.list()});
+            sendToPeer(socket, {cmd: 'peer:list', data: peers.list()});
             break;
-        case 'webrtc:answer' :
+        case 'peer:offer' :
+            peer = peers.getPeerByUuid(data.targetPeerUuid);
+            //swap data.targetUuid <-> data.uuid
+            sendToPeer(peer.socket, {cmd: 'peer:offer', data: {targetPeerUuid: data.uuid, offer: data.offer}});
             break;
-        case 'webrtc:candidate'  :
-            break;
-        case 'webrtc:offer' :
+        case 'peer:answer' :
+            peer = peers.getPeerByUuid(data.targetPeerUuid);
+            //swap data.targetUuid <-> data.uuid
+            sendToPeer(peer.socket, {cmd: 'peer:answer', data: {targetPeerUuid: data.uuid, answer: data.answer}});
             break;
     }
 }
