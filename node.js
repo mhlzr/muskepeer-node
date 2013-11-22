@@ -80,6 +80,9 @@ function messageHandler(socket, data) {
             //swap data.targetUuid <-> data.uuid
             sendToPeer(peer.socket, {cmd: 'peer:answer', data: {targetPeerUuid: data.uuid, answer: data.answer}});
             break;
+        case 'peer:candidate' :
+            peer = peers.getPeerByUuid(data.targetPeerUuid);
+            sendToPeer(peer.socket, {cmd: 'peer:candidate', data: {targetPeerUuid: data.uuid, candidate: data.candidate}});
     }
 }
 
