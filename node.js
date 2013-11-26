@@ -6,13 +6,11 @@
 
 var _ = require('underscore'),
     util = require('util'),
-    argv = require('optimist')
-        .usage('Usage: $0 --server=[url]')
-        .demand(['server'])
-        .argv,
     peers = require('./lib/collections/peers'),
     WebSocketServer = require('ws').Server,
-    wss = new WebSocketServer({port: 8080});
+    wss = new WebSocketServer({
+            port: process.env.WEBSOCKET_PORT || 8080}
+    );
 
 //Global Exception Handling
 process.on('uncaughtException', function (err) {
@@ -21,11 +19,6 @@ process.on('uncaughtException', function (err) {
 
 
 //TODO connect to other notes via udp and create a replica network
-//connect to server passed via argv
-// we do this via UDP
-//console.log('Connecting to: ', argv.server);
-//socket = require('socket.io-client').connect(argv.server);
-
 
 wss.on('connection', function (socket) {
 
@@ -40,12 +33,6 @@ wss.on('connection', function (socket) {
 
 });
 
-/*
- wss.broadcast = function(data) {
- for(var i in this.peers)
- this.peers[i].send(data);
- };
- */
 function messageHandler(socket, data) {
     var peer;
 
