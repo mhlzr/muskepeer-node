@@ -5,12 +5,12 @@
  */
 
 var _ = require('underscore'),
-    util = require('util'),
     peers = require('./lib/collections/peers'),
-    WebSocketServer = require('ws').Server,
-    wss = new WebSocketServer({
-            port: process.env.WEBSOCKET_PORT || 8080}
-    );
+    WebSocketServer = require('ws').Server;
+
+var wss = new WebSocketServer({
+        port: process.env.WEBSOCKET_PORT || 5000}
+);
 
 //Global Exception Handling
 process.on('uncaughtException', function (err) {
