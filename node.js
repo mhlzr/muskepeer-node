@@ -9,7 +9,7 @@ var _ = require('underscore'),
     WebSocketServer = require('ws').Server;
 
 var wss = new WebSocketServer({
-        port: process.env.WEBSOCKET_PORT || 5000}
+        port: process.env.WEBSOCKET_PORT || 8080}
 );
 
 //Global Exception Handling
@@ -22,8 +22,6 @@ process.on('uncaughtException', function (err) {
 
 wss.on('connection', function (socket) {
 
-    console.log('Peer connected');
-    socket.send('Welcome');
     socket.on('message', function (data) {
         console.log('received: %s', data);
         messageHandler(socket, JSON.parse(data));
