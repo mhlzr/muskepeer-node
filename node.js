@@ -22,6 +22,8 @@ process.on('uncaughtException', function (err) {
 
 wss.on('connection', function (socket) {
 
+    console.log('Peer connected');
+    socket.send('Welcome');
     socket.on('message', function (data) {
         console.log('received: %s', data);
         messageHandler(socket, JSON.parse(data));
