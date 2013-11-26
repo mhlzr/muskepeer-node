@@ -70,6 +70,12 @@ function messageHandler(socket, data) {
         case 'peer:candidate' :
             peer = peers.getPeerByUuid(data.targetPeerUuid);
             sendToPeer(peer.socket, {cmd: 'peer:candidate', data: {targetPeerUuid: data.uuid, candidate: data.candidate}});
+            break;
+        case 'peer:result' :
+            break;
+        default:
+            break;
+
     }
 }
 
