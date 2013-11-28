@@ -43,7 +43,7 @@ function messageHandler(socket, data) {
 
             //Todo Test if peers authToken matches
             var success = peers.add({
-                location: {lat: 0, long: 0},
+                location: data.location,
                 socket: socket,
                 uuid: data.uuid
             });
