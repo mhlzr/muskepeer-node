@@ -3,9 +3,11 @@
 
 var  WebSocketServer = require('ws').Server;
 
-var wss = new WebSocketServer({
+var wss = new WebSocketServer(
+		{
 		host:process.env.OPENSHIFT_NODEJS_IP,
-        port: process.env.OPENSHIFT_NODEJS_PORT  || 8080;}
+        port: process.env.OPENSHIFT_NODEJS_PORT  || 8080
+		}
 );
 
 wss.on('connection', function (socket) {
