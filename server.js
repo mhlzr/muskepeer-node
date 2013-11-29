@@ -4,7 +4,7 @@
 var  WebSocketServer = require('ws').Server;
 
 var wss = new WebSocketServer({
-        port: process.env.OPENSHIFT_NODEJS_PORT || 8080}
+        port: process.env.OPENSHIFT_INTERNAL_PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080}
 );
 
 wss.on('connection', function (socket) {
