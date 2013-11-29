@@ -11,24 +11,22 @@
   "author": {
     "name": "OpenShift",
     "email": "ramr@example.org",
-    "url":  "http://www.openshift.com/"
+    "url": "http://www.openshift.com/"
   },
   "homepage": "http://www.openshift.com/",
   "repository": {
     "type": "git",
     "url": "https://gitub.com/openshift/origin-server"
   },
-
   "engines": {
     "node": ">= 0.6.0",
     "npm": ">= 1.0.0"
   },
-
   "dependencies": {
+    "ws": "~0.4.31"
   },
   "devDependencies": {},
   "bundleDependencies": [],
-
   "private": true,
   "main": "server.js"
 }
