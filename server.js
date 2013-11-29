@@ -11,7 +11,7 @@ var wss = new WebSocketServer(
 
 wss.on('connection', function (socket) {
 
-    socket.send('Hello');
+    //socket.send('Hello');
 
     socket.on('message', function (data) {
         console.log(data);
