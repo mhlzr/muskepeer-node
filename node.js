@@ -11,7 +11,7 @@ var _ = require('underscore'),
 var wss = new WebSocketServer(
     {
         host: process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1',
-        port: process.env.OPENSHIFT_NODEJS_PORT || 8080
+        port: 8080
     }
 );
 
