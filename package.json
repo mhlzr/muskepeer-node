@@ -1,12 +1,13 @@
 {
     "name": "muskepeer-node",
     "version": "0.0.1",
-    "description": "",
+    "description": "Muskepeer Node",
     "main": "node.js",
     "author": "Matthieu Holzer",
     "license": "WTFPL",
     "dependencies": {
         "ws": "~0.4.31",
         "underscore": "~1.5.2"
-    }
+    },
+    "private": true
 }

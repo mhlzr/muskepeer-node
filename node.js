@@ -8,8 +8,11 @@ var _ = require('underscore'),
     peers = require('./lib/collections/peers'),
     WebSocketServer = require('ws').Server;
 
-var wss = new WebSocketServer({
-        port: process.env.WEBSOCKET_PORT || 8080}
+var wss = new WebSocketServer(
+    {
+        host: process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1',
+        port: process.env.OPENSHIFT_NODEJS_PORT || 8080
+    }
 );
 
 //Global Exception Handling
@@ -82,6 +85,6 @@ function messageHandler(socket, data) {
 
 function sendToPeer(socket, data) {
     //state 1 = ready
-    if (socket.readyState !== 1) return;
+    if (!socket || socket.readyState !== 1) return;
     socket.send(JSON.stringify(data));
 }
