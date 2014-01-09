@@ -15,15 +15,20 @@ var wss = new WebSocketServer(
     }
 );
 
+var HEARTBEAT_INTERVAL = 1000 * 60; //1 min
+
 //Global Exception Handling
 process.on('uncaughtException', function (err) {
     console.error(err.stack);
 });
 
 
-//TODO connect to other notes via udp and create a replica network
-
 wss.on('connection', function (socket) {
+
+    var heartbeat = setInterval(function () {
+            sendToPeer(socket, {cmd: 'node:heartbeat'});
+        }, HEARTBEAT_INTERVAL
+    );
 
     socket.on('message', function (data) {
         console.log('received: %s', data);
@@ -32,9 +37,11 @@ wss.on('connection', function (socket) {
 
     socket.on('close', function (e) {
         peers.remove(peers.getPeerBySocket(socket));
+        clearInterval(heartbeat);
     });
 
 });
+
 
 function messageHandler(socket, data) {
     var peer;
@@ -85,12 +92,16 @@ function messageHandler(socket, data) {
 
 function sendToPeer(socket, data) {
     //state 1 = ready
-    if (!socket || socket.readyState !== 1) return;
+    if (!socket || socket.readyState !== 1) {
+        peers.remove(peers.getPeerBySocket(socket));
+        return;
+    }
     try {
         socket.send(JSON.stringify(data));
     }
     catch (e) {
         peers.remove(peers.getPeerBySocket(socket));
+        socket.close();
     }
 
 }
