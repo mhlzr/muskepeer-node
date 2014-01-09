@@ -21,8 +21,6 @@ process.on('uncaughtException', function (err) {
 });
 
 
-//TODO connect to other notes via udp and create a replica network
-
 wss.on('connection', function (socket) {
 
     socket.on('message', function (data) {
@@ -44,35 +42,36 @@ function messageHandler(socket, data) {
     switch (data.cmd.toLowerCase()) {
         case 'peer:auth' :
 
-            //Todo Test if peers authToken matches
-            var success = peers.add({
+            //ToODO Test if peers authToken matches
+            peer = peers.add({
                 location: data.location,
                 socket: socket,
                 uuid: data.uuid
             });
 
-            sendToPeer(socket, {cmd: 'peer:auth', data: {success: success}});
+            sendToPeer(peer, {cmd: 'peer:auth', data: {success: success}});
 
             //https://github.com/einaros/ws/blob/master/lib/ErrorCodes.js
-            if (!success) socket.close(1008, 'Missing auth-credentials or already registered.');
+            if (!peer) socket.close(1008, 'Missing auth-credentials or already registered.');
 
             break;
         case 'peer:list' :
-            sendToPeer(socket, {cmd: 'peer:list', data: peers.list()});
+            peer = peers.getPeerBySocket(socket);
+            sendToPeer(peer, {cmd: 'peer:list', data: peers.list()});
             break;
         case 'peer:offer' :
             peer = peers.getPeerByUuid(data.targetPeerUuid);
             //swap data.targetUuid <-> data.uuid
-            sendToPeer(peer.socket, {cmd: 'peer:offer', data: {targetPeerUuid: data.uuid, offer: data.offer, location: data.location}});
+            sendToPeer(peer, {cmd: 'peer:offer', data: {targetPeerUuid: data.uuid, offer: data.offer, location: data.location}});
             break;
         case 'peer:answer' :
             peer = peers.getPeerByUuid(data.targetPeerUuid);
             //swap data.targetUuid <-> data.uuid
-            sendToPeer(peer.socket, {cmd: 'peer:answer', data: {targetPeerUuid: data.uuid, answer: data.answer}});
+            sendToPeer(peer, {cmd: 'peer:answer', data: {targetPeerUuid: data.uuid, answer: data.answer}});
             break;
         case 'peer:candidate' :
             peer = peers.getPeerByUuid(data.targetPeerUuid);
-            sendToPeer(peer.socket, {cmd: 'peer:candidate', data: {targetPeerUuid: data.uuid, candidate: data.candidate}});
+            sendToPeer(peer, {cmd: 'peer:candidate', data: {targetPeerUuid: data.uuid, candidate: data.candidate}});
             break;
         case 'peer:result' :
             break;
@@ -83,8 +82,17 @@ function messageHandler(socket, data) {
 }
 
 
-function sendToPeer(socket, data) {
+function sendToPeer(peer, data) {
+    var socket = peer.socket;
+
     //state 1 = ready
     if (!socket || socket.readyState !== 1) return;
-    socket.send(JSON.stringify(data));
+
+    try {
+        socket.send(JSON.stringify(data));
+    }
+    catch (e) {
+        peers.remove(peer);
+    }
+
 }
