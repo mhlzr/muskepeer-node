@@ -6,16 +6,15 @@
 
 var _ = require('underscore'),
     peers = require('./lib/collections/peers'),
-    WebSocketServer = require('ws').Server;
+    WebSocketServer = require('ws').Server,
+    wss = new WebSocketServer(
+        {
+            host: process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1',
+            port: 8080
+        }
+    );
 
-var wss = new WebSocketServer(
-    {
-        host: process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1',
-        port: 8080
-    }
-);
-
-var HEARTBEAT_INTERVAL = 1000 * 60; //1 min
+var HEARTBEAT_INTERVAL = 1000 * 60; //1m
 
 //Global Exception Handling
 process.on('uncaughtException', function (err) {
@@ -51,7 +50,7 @@ function messageHandler(socket, data) {
     switch (data.cmd.toLowerCase()) {
         case 'peer:auth' :
 
-            //Todo Test if peers authToken matches
+            //TODO Test if peers authToken matches
             var success = peers.add({
                 location: data.location,
                 socket: socket,

@@ -8,6 +8,5 @@
     "dependencies": {
         "ws": "~0.4.31",
         "underscore": "~1.5.2"
-    },
-    "private": true
+    }
 }
